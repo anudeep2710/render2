@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from googletrans import Translator
 from typing import Optional
@@ -6,6 +7,15 @@ import os
 
 app = FastAPI(title="Indian Languages Translator",
              description="Translate text between English and Indian languages")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Initialize the translator
 translator = Translator()
@@ -33,6 +43,10 @@ class TranslationResponse(BaseModel):
     translated_text: str
     source_language: str
     target_language: str
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
 
 @app.get("/")
 def read_root():
